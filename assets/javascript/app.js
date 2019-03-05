@@ -266,7 +266,7 @@
 
 
 
-      $(document).on("click", "#sendMessage", function () {
+      $(document).on("click", "#submitMessage", function () {
           event.preventDefault();
 
           if ($("#message").val() != "" && username != "") {
