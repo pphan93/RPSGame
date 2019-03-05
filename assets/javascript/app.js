@@ -14,43 +14,66 @@
   // Create a variable to reference the database.
   var database = firebase.database();
 
+
   // -------------------CONNECTIONS STATUS--------------------------------------------------- //
   var rpsgame = database.ref("RPSGAME");
   var playerListRef = database.ref("RPSGAME/playerList");
-  console.log(playerListRef);
-  //var connectedRef = firebase.database().ref('.info/connected');
-  rpsgame.on('value', function (snapshot) {
-      if (snapshot.child("playerList").exists()) {
-          playerInGame = snapshot.child("playerList").numChildren();
-          playerlistArrary = snapshot.val().playerList;
-          console.log(playerlistArrary);
+  var messageRef = database.ref("RPSGAME").child("message");
+  
 
-          if (playerInGame === 2) {
-              $(".gameContainer").show();
-              $(".status").text("");
-          } else if (playerInGame < 2) {
-              $(".status").text("Waiting for another player");
-              $(".gameContainer").hide();
+  function initalData() {
+
+      console.log(playerListRef);
+      rpsgame.on('value', function (snapshot) {
+          if (snapshot.child("playerList").exists()) {
+              playerInGame = snapshot.child("playerList").numChildren();
+              playerlistArrary = snapshot.val().playerList;
+              console.log(playerlistArrary);
+
+              if (playerInGame === 2) {
+                  $(".gameContainer").show();
+                  $(".status").text("");
+              } else if (playerInGame < 2) {
+                  $(".status").text("Waiting for another player");
+                  $(".gameContainer").hide();
+              }
+          } else {
+              console.log("No player");
           }
-      } else {
-          console.log("No player");
-      }
 
-      if (snapshot.child("playerData").exists()) {
-          var playerData = snapshot.child("playerData").val();
-          for (var i in playerData) {
-              if (playerData[i].userId != username) {
-                  if ( playerData[i].state === "picked" && state === "picked") {
-                    otherPlayerMove = playerData[i].rps;
-                    checkWinner();
-                }
+          if (snapshot.child("playerData").exists()) {
+              var playerData = snapshot.child("playerData").val();
+              for (var i in playerData) {
+                  if (playerData[i].userId != username && username != "") {
+                      if (playerData[i].state === "picked" && state === "picked") {
+                          otherPlayerMove = playerData[i].rps;
+                          checkWinner();
+                      }
+                  }
               }
           }
+      });
+  }
+
+
+  function getScore() {
+      if (username != "") {
+          var playerScoreData = database.ref("RPSGAME/playerScore/" + username);
+          playerScoreData.once("value", function (snapshot) {
+              console.log("_________________________");
+              console.log(snapshot.val());
+              if (snapshot.val() != null) {
+                  winScore = snapshot.val().win;
+                  loseScore = snapshot.val().lose;
+              }
+          });
+          console.log("user" + username);
       }
-  });
+  }
 
 
   function init(username) {
+
       console.log(playerlistArrary);
       if (playerlistArrary.length < MAXPLAYER) {
           playerlistArrary.push(username);
@@ -107,6 +130,53 @@
       playerDataRef.onDisconnect().remove();
   }
 
+  function addScore(win, lose) {
+      console.log("win:" + win, lose);
+      playerScoreRef = database.ref("RPSGAME").child("playerScore/" + username);
+      playerScoreRef.set({
+          win: win,
+          lose: lose
+      });
+  }
+
+
+  function addMessage(message, username) {
+
+      messageRef.push({
+          username: username,
+          text: message
+      });
+
+      $("#message").val("");
+  }
+
+
+  function listenNewMessage() {
+    
+      messageRef.on('child_added', function (snapshot) {
+          var msg = snapshot.val();
+          console.log(msg.username + " " + msg.text);
+          
+          var containerDiv = $("<div>", {
+              "class": "container darker"
+          }).appendTo(".messageBox");
+
+          $("<p>", {
+              text: msg.text
+          }).appendTo(containerDiv);
+
+          $("<span>", {
+              "class" : "username-left",
+              text: msg.username
+          }).appendTo(containerDiv);
+
+          $(".wrapper").scrollTop($(".wrapper")[0].scrollHeight);
+
+      });
+  }
+
+
+
   function checkArray(my_arr) {
       for (var i = 0; i < my_arr.length; i++) {
           if (my_arr[i] === "")
@@ -132,6 +202,8 @@
   var playerInGame;
   var playerDataRef;
   var otherPlayerMove;
+  var winScore = 0;
+  var loseScore = 0;
 
   function play() {
       if (player1Move != "" && player2Move != "") {
@@ -144,25 +216,37 @@
           var winOptionArray = winOption[i].split(",");
 
           if (playerMove === winOptionArray[0] && otherPlayerMove === winOptionArray[1]) {
+              //winScore = winScore + 1;
+              addScore(winScore + 1, loseScore);
               console.log("You win");
           } else if (otherPlayerMove === winOptionArray[0] && playerMove === winOptionArray[1]) {
+              //loseScore = loseScore + 1;
+              addScore(winScore, loseScore + 1);
               console.log("You Loss");
           } else if (playerMove === otherPlayerMove) {
               console.log("TIE");
           }
+
+          state = "finished";
+          addtoPlayerData();
       }
   }
 
-
+  
   $(document).ready(function () {
+    
+      initalData();
+      listenNewMessage();
       $(".gameContainer").hide();
 
 
       $(document).on("click", "#submitUsername", function () {
+
           event.preventDefault();
 
           username = $("#inputUsername").val();
           console.log(username);
+          getScore();
           init(username);
 
       });
@@ -170,7 +254,7 @@
 
       console.log("test");
 
-      $(document).on("click", "i", function () {
+      $(document).on("click", "a", function () {
           event.preventDefault();
 
           if (state === "start") {
@@ -178,18 +262,16 @@
               playerMove = $(this).attr("id");
               addtoPlayerData();
           }
+      });
 
-          if (state != 2) {
-              if (whoTurn === "player1") {
-                  player1Move = $(this).attr("id");
-                  whoTurn = "player2";
-                  console.log(player1Move);
-              } else if (whoTurn === "player2") {
-                  player2Move = $(this).attr("id");
-                  console.log(player2Move);
-                  state = 2;
-                  play();
-              }
+
+
+      $(document).on("click", "#sendMessage", function () {
+          event.preventDefault();
+
+          if ($("#message").val() != "" && username != "") {
+              var message = $("#message").val();
+              addMessage(message, username);
           }
 
       });

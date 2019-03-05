@@ -27,6 +27,7 @@ body {
     cursor: pointer;
     margin: 0.25em;
   }
+
   
   .computeranswer {
     margin: 3em;
@@ -66,3 +67,60 @@ body {
     border: 2px solid #000;
   }
   
+
+  * Chat containers */
+.container {
+  border: 2px solid #dedede;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+/* Darker chat container */
+.darker {
+  border-color: #ccc;
+  background-color: #ddd;
+}
+
+/* Clear floats */
+.container::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Style images */
+.container img {
+  float: left;
+  max-width: 60px;
+  width: 100%;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+/* Style the right image */
+.container img.right {
+  float: right;
+  margin-left: 20px;
+  margin-right:0;
+}
+
+/* Style time text */
+.username-right {
+  float: right;
+  color: #aaa;
+}
+
+/* Style time text */
+.username-left {
+  float: left;
+  color: #999;
+}
+
+.wrapper {
+  border: 5px solid #000;
+  margin-top: 20px;
+  overflow-y: auto;
+  max-height: 400px;
+}
