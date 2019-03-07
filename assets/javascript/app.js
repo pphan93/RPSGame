@@ -50,7 +50,7 @@ var otherPlayerCurrentWinScore = 0;
                   $(".gameContainer").show();
                   $(".status").text("");
                   $("#myUsername").text(username);
-                  currentWinScore = playerData[username].win;
+                  //currentWinScore = playerData[username].win;
                   $("#playerScore").text(currentWinScore);
 
                   for (var i in playerData) {
@@ -69,7 +69,6 @@ var otherPlayerCurrentWinScore = 0;
               } else if (playerInGame < 2) {
                   $(".status").text("Waiting for another player");
                   $(".gameContainer").hide();
-                  resetGame();
               }
           } else {
 
@@ -78,6 +77,13 @@ var otherPlayerCurrentWinScore = 0;
 
 
 
+      });
+
+      database.ref("RPSGAME/playerData").on('child_removed' , function (snapshot) {
+          if(snapshot.val() != "") {
+            resetGame();
+          }
+            
       });
   }
 
@@ -199,8 +205,9 @@ var otherPlayerCurrentWinScore = 0;
         otherPlayerMove = "";
         $("a").removeClass("active");
         $(".clear").empty();
-        playerDataRef.child("active").set({
-            state: state
+        playerDataRef.update({
+            state: state,
+            rps: ""
         });
   }
 
@@ -244,8 +251,9 @@ var otherPlayerCurrentWinScore = 0;
 
       $(document).on("click", "#reset", function (event) {
         event.preventDefault();
-
-        resetGame();
-
+        if(state === "finished") {
+            resetGame();
+        }
+        
     });
   });
