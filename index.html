@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <!-- Added Moment JS -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="./assets/css/style.css">
+    <script src="./assets/javascript/app.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="inputUsername">Username</label>
+                <input type="text" class="form-control" id="inputUsername" placeholder="Enter Username">
+            </div>
+            <button id="submitUsername" type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div class="gamebox">
+            <h1>Rock, Paper, Scissors</h1>
+
+
+            <h1 class="status"> </h1>
+
+            <div class="gameContainer">
+                <h3>Select your move:</h3>
+
+
+                <!--Icons for player choice-->
+
+                <div class="usercontainer">
+                    <a href="" id="rock"><i class="fas fa-hand-rock"></i></a>
+                    <a href="" id="paper"><i class="fas fa-hand-paper"></i></a>
+                    <a href="" id="scissors"><i class="fas fa-hand-scissors"></i></a>
+                </div>
+
+                <div class="answer">
+                    <h3>Computer choice:</h3>
+                    <p id="myResult"></p>
+                    <p id="otherPlayerResult"></p>
+                    <p id="winner"></p>
+                </div>
+                <!--Scoreboard-->
+                <table>
+                    <tr>
+                        <th colspan="2">Scoreboard</th>
+                    </tr>
+                    <tr>
+                        <td id="myUsername"></td>
+                        <td id="otherPlayerUsername"></td>
+                    </tr>
+                    <tr>
+                        <td id="playerScore">0</td>
+                        <td id="compScore">0</td>
+                    </tr>
+                </table>
+
+                <button id="reset">Reset</button>
+            </div>
+
+        </div>
+
+
+        <!-------------------CHATTTTTTTTTTTTTTTTT-->
+
+        <div class="wrapper">
+
+            <div class="messageBox">
+                <!--
+                <div class="container darker">
+                    <p>Hey! I'm fine. Thanks for asking!</p>
+                    <span class="username-left">Phuoc</span>
+                </div>
+            
+            -->
+        </div>
+            </div>
+            <div class="input-group mb-3 mt-3">
+                <input type="text" id="message" class="form-control" placeholder="Message" aria-label="Recipient's username"
+                    aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button id="submitMessage" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+</body>
+
+</html>

@@ -19,7 +19,6 @@
   var rpsgame = database.ref("RPSGAME");
   var playerListRef = database.ref("RPSGAME/playerList");
   var messageRef = database.ref("RPSGAME").child("message");
-  
 
   function initalData() {
 
@@ -27,12 +26,13 @@
       rpsgame.on('value', function (snapshot) {
           if (snapshot.child("playerList").exists()) {
               playerInGame = snapshot.child("playerList").numChildren();
-              playerlistArrary = snapshot.val().playerList;
+              //playerlistArrary = snapshot.val().playerList;
               console.log(playerlistArrary);
 
               if (playerInGame === 2) {
                   $(".gameContainer").show();
                   $(".status").text("");
+                  
               } else if (playerInGame < 2) {
                   $(".status").text("Waiting for another player");
                   $(".gameContainer").hide();
@@ -71,6 +71,16 @@
       }
   }
 
+  function getPlayerList() {
+      playerListRef.once("value", function (snapshot) {
+          console.log("_________________________");
+          console.log(snapshot.val());
+          if (snapshot.val() != null) {
+              playerlistArrary = snapshot.val();
+          }
+      });
+      init(username);
+  }
 
   function init(username) {
 
@@ -152,11 +162,11 @@
 
 
   function listenNewMessage() {
-    
+
       messageRef.on('child_added', function (snapshot) {
           var msg = snapshot.val();
           console.log(msg.username + " " + msg.text);
-          
+
           var containerDiv = $("<div>", {
               "class": "container darker"
           }).appendTo(".messageBox");
@@ -166,7 +176,7 @@
           }).appendTo(containerDiv);
 
           $("<span>", {
-              "class" : "username-left",
+              "class": "username-left",
               text: msg.username
           }).appendTo(containerDiv);
 
@@ -232,29 +242,30 @@
       }
   }
 
-  
+
   $(document).ready(function () {
-    
+
       initalData();
       listenNewMessage();
       $(".gameContainer").hide();
 
 
-      $(document).on("click", "#submitUsername", function () {
+      $(document).on("click", "#submitUsername", function (event) {
 
           event.preventDefault();
 
           username = $("#inputUsername").val();
           console.log(username);
           getScore();
-          init(username);
+          //init(username);
+          getPlayerList();
 
       });
 
 
       console.log("test");
 
-      $(document).on("click", "a", function () {
+      $(document).on("click", "a", function (event) {
           event.preventDefault();
 
           if (state === "start") {
@@ -266,7 +277,7 @@
 
 
 
-      $(document).on("click", "#submitMessage", function () {
+      $(document).on("click", "#submitMessage", function (event) {
           event.preventDefault();
 
           if ($("#message").val() != "" && username != "") {
