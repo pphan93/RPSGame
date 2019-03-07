@@ -27,32 +27,31 @@
                 <label for="inputUsername">Username</label>
                 <input type="text" class="form-control" id="inputUsername" placeholder="Enter Username">
             </div>
-            <button id="submitUsername" type="submit" class="btn btn-primary">Submit</button>
+            <button id="submitUsername" type="submit" >Submit</button>
         </form>
 
         <div class="gamebox">
             <h1>Rock, Paper, Scissors</h1>
 
 
-            <h1 class="status"> </h1>
+            <h3 class="status clear"> </h3>
 
             <div class="gameContainer">
-                <h3>Select your move:</h3>
+                <h4>Select your move:</h4>
 
 
                 <!--Icons for player choice-->
 
                 <div class="usercontainer">
-                    <a href="" id="rock"><i class="fas fa-hand-rock"></i></a>
+                    <a  href="" id="rock"><i class="fas fa-hand-rock"></i></a>
                     <a href="" id="paper"><i class="fas fa-hand-paper"></i></a>
                     <a href="" id="scissors"><i class="fas fa-hand-scissors"></i></a>
                 </div>
 
                 <div class="answer">
-                    <h3>Computer choice:</h3>
-                    <p id="myResult"></p>
-                    <p id="otherPlayerResult"></p>
-                    <p id="winner"></p>
+                    <h4>Player choice:</h4>
+                    <p class = "clear" id="otherPlayerResult"></p>
+                    <p class = "clear" id="winner"></p>
                 </div>
                 <!--Scoreboard-->
                 <table>
@@ -65,7 +64,7 @@
                     </tr>
                     <tr>
                         <td id="playerScore">0</td>
-                        <td id="compScore">0</td>
+                        <td id="otherPlayerScore">0</td>
                     </tr>
                 </table>
 
@@ -93,7 +92,7 @@
                 <input type="text" id="message" class="form-control" placeholder="Message" aria-label="Recipient's username"
                     aria-describedby="basic-addon2">
                 <div class="input-group-append">
-                    <button id="submitMessage" type="submit" class="btn btn-primary">Submit</button>
+                    <button id="submitMessage" type="submit">Submit</button>
                 </div>
             </div>
 </body>
