@@ -15,45 +15,45 @@
   var database = firebase.database();
 
 
-//-----------------------------------------------//
-var state;
-var winOption = [
-    "rock,scissors",
-    "paper,rock",
-    "scissors,paper"
-];
-var playerMove = "";
-var username = "";
-var otherPlayerUsername;
-var MAXPLAYER = 2;
-var playerInGame;
-var playerDataRef;
-var otherPlayerMove;
-var winScore = 0;
-var loseScore = 0;
-var currentWinScore = 0;
-var otherPlayerCurrentWinScore = 0;
+  //-----------------------------------------------//
+  var state;
+  var winOption = [
+      "rock,scissors",
+      "paper,rock",
+      "scissors,paper"
+  ];
+  var playerMove = "";
+  var username = "";
+  var otherPlayerUsername;
+  var MAXPLAYER = 2;
+  var playerInGame;
+  var playerDataRef;
+  var otherPlayerMove;
+  var winScore = 0;
+  var loseScore = 0;
+  var currentWinScore = 0;
+  var otherPlayerCurrentWinScore = 0;
 
-//-------------------------------//
+  //-------------------------------//
 
- // -------------------CONNECTIONS STATUS--------------------------------------------------- //
- var rpsgame = database.ref("RPSGAME");
- var messageRef = database.ref("RPSGAME").child("message");
+  // -------------------CONNECTIONS STATUS--------------------------------------------------- //
+  var rpsgame = database.ref("RPSGAME/playerData");
+  var messageRef = database.ref("RPSGAME").child("message");
 
   function initalData() {
 
       rpsgame.on('value', function (snapshot) {
-          playerInGame = snapshot.child("playerData").numChildren();
-          var playerData = snapshot.child("playerData").val();
-          if (snapshot.child("playerData").exists()) {
+          playerInGame = snapshot.numChildren();
+          var playerData = snapshot.val();
+          if (snapshot.exists()) {
               if (playerInGame === 2) {
                   $(".gameContainer").show();
                   $(".status").text("");
                   $("#myUsername").text(username);
-                  //currentWinScore = playerData[username].win;
                   $("#playerScore").text(currentWinScore);
 
                   for (var i in playerData) {
+                      console.log("____ " + i);
                       if (playerData[i].userId != username && username != "") {
                           otherPlayerUsername = playerData[i].userId;
                           $("#otherPlayerUsername").text(otherPlayerUsername);
@@ -61,7 +61,10 @@ var otherPlayerCurrentWinScore = 0;
                           $("#otherPlayerScore").text(otherPlayerCurrentWinScore);
                           if (playerData[i].state === "picked" && state === "picked") {
                               otherPlayerMove = playerData[i].rps;
+                              $("#otherPlayerResult").text(otherPlayerMove.toUpperCase());
                               checkWinner();
+                              console.log(i);
+                              console.log("test");
                           }
                       }
                   }
@@ -79,11 +82,14 @@ var otherPlayerCurrentWinScore = 0;
 
       });
 
-      database.ref("RPSGAME/playerData").on('child_removed' , function (snapshot) {
-          if(snapshot.val() != "") {
-            resetGame();
+      database.ref("RPSGAME/playerData").on('child_removed', function (snapshot) {
+          //if(snapshot.val() != "") {
+          console.log(snapshot.val());
+          if (playerInGame === 1) {
+              resetGame();
           }
-            
+          //}
+
       });
   }
 
@@ -104,15 +110,17 @@ var otherPlayerCurrentWinScore = 0;
   function init(username) {
 
       if (playerInGame < MAXPLAYER) {
-          state = "start";
-          addtoPlayerData();
+          checkIfNameTaken();
       } else {
           console.log("ROOM FULL");
       }
+
+
   }
 
   function addtoPlayerData() {
       playerDataRef = database.ref("RPSGAME").child("playerData/" + username);
+
       playerDataRef.set({
           rps: playerMove,
           state: state,
@@ -123,6 +131,22 @@ var otherPlayerCurrentWinScore = 0;
       playerDataRef.onDisconnect().remove();
   }
 
+  function checkIfNameTaken() {
+      var playerDataRef = database.ref("RPSGAME").child("playerData/" + username);
+      playerDataRef.once("value", function (snapshot) {
+          if (snapshot.exists()) {
+            $(".status").text("Name is already taken");
+              console.log("TRUE");
+              return;
+
+          } else {
+            state = "start";
+            addtoPlayerData();
+          }
+      });
+  }
+
+
   function addScore(win, lose) {
       playerScoreRef = database.ref("RPSGAME").child("playerScore/" + username);
       playerScoreRef.set({
@@ -131,8 +155,8 @@ var otherPlayerCurrentWinScore = 0;
       });
 
       playerDataRef.update({
-        win: currentWinScore
-        });
+          win: currentWinScore
+      });
   }
 
 
@@ -182,33 +206,32 @@ var otherPlayerCurrentWinScore = 0;
           var winOptionArray = winOption[i].split(",");
 
           if (playerMove === winOptionArray[0] && otherPlayerMove === winOptionArray[1]) {
-              //winScore = winScore + 1;
               addScore(winScore + 1, loseScore);
               currentWinScore++;
+              console.log("score" + currentWinScore);
+              console.log("you win");
               $("#winner").text("YOU WIN");
           } else if (otherPlayerMove === winOptionArray[0] && playerMove === winOptionArray[1]) {
-              //loseScore = loseScore + 1;
               addScore(winScore, loseScore + 1);
               $("#winner").text("You Loss");
           } else if (playerMove === otherPlayerMove) {
               $("#winner").text("TIE");
           }
-
           state = "finished";
           addtoPlayerData();
       }
   }
 
   function resetGame() {
-        state = "start";
-        playerMove = "";
-        otherPlayerMove = "";
-        $("a").removeClass("active");
-        $(".clear").empty();
-        playerDataRef.update({
-            state: state,
-            rps: ""
-        });
+      state = "start";
+      playerMove = "";
+      otherPlayerMove = "";
+      $("a").removeClass("active");
+      $(".clear").empty();
+      playerDataRef.update({
+          state: state,
+          rps: ""
+      });
   }
 
   $(document).ready(function () {
@@ -250,10 +273,10 @@ var otherPlayerCurrentWinScore = 0;
       });
 
       $(document).on("click", "#reset", function (event) {
-        event.preventDefault();
-        if(state === "finished") {
-            resetGame();
-        }
-        
-    });
+          event.preventDefault();
+          if (state === "finished") {
+              resetGame();
+          }
+
+      });
   });
