@@ -1,4 +1,4 @@
-# RPSGame
+# Rock, Paper, Scissors Game
 
 Online Multiplayer Game - Rock, Paper, Scissors using firebase to sync data between two players.
 
